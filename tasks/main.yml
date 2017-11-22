@@ -1,0 +1,64 @@
+---
+
+- name: Download
+  get_url:
+    url: https://github.com/jasonmunro/cypht/archive/master.zip
+    dest: /usr/src/cypht.zip
+  register: cypht_download
+
+- name: Unarchive
+  unarchive:
+    src: /usr/src/cypht.zip
+    remote_src: true
+    dest: /opt
+  notify: Restart PHP
+  when: cypht_download|changed
+
+- name: Configure
+  template:
+    owner: cypht
+    group: cypht
+    src: opt/cypht-master/hm3.ini
+    dest: /opt/cypht-master/hm3.ini
+  register: cypht_configuration
+
+- name: Generate configuration
+  command: /usr/bin/php /opt/cypht-master/scripts/config_gen.php
+  when: cypht_configuration | changed
+
+- name: Data folder
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "{{ item.mode | default(0744) }}"
+  with_items:
+   - {path: /var/lib/hm3}
+   - {path: /var/lib/hm3/attachments}
+   - {path: /var/lib/hm3/users}
+   - {path: /var/lib/hm3/app_data, mode: '0444'}
+
+- name: Create DB tables
+  shell: 'psql -h localhost -U {{ cypht_db_user }} -c "{{ item }}" {{ cypht_db_user }}'
+  environment:
+    PGPASSWORD: '{{ cypht_db_password }}'
+  with_items:
+    - CREATE TABLE hm_user_session (hm_id varchar(250) primary key not null, data text, date timestamp);
+    - CREATE TABLE hm_user (username varchar(255) primary key not null, hash varchar(255));
+    - CREATE TABLE hm_user_settings (username varchar(250) primary key not null, settings text);
+  register: cypht_create_table
+  failed_when: cypht_create_table.rc != 0 and 'already exists' not in cypht_create_table.stderr
+  changed_when: "'already exists' not in cypht_create_table.stderr"
+
+- name: Check account
+  shell: |
+    psql -h localhost -U {{ cypht_db_user }} -tA -c "SELECT COUNT(*) FROM hm_user WHERE username='{{ cypht_user | quote }}'"
+  environment:
+    PGPASSWORD: '{{ cypht_db_password }}'
+  register: cypht_account
+  changed_when: cypht_account.stdout == '0'
+
+- name: Create Account
+  command: "/usr/bin/php /opt/cypht-master/scripts/create_account.php {{ cypht_user }} {{ cypht_password }}"
+  when: cypht_account | changed
