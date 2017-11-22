@@ -34,7 +34,8 @@ Role Variables
 * `cypht_db_user`: User used to connect to database (default to `cypht`).
 * `cypht_db_password`: Password used to connect to database (required).
 * `cypht_cookie_domain`: Cypht cookie domain name (default to autodetect).
-
+* `cypht_git_url`: Cypht git url (default to `https://github.com/jasonmunro/cypht.git`).
+* `cypht_version`: Cypht version (default to `master`).
 
 Example Playbook
 ----------------
@@ -62,7 +63,7 @@ Example Playbook
       cypht:
         socket: /var/run/php7.0-fpm-cypht.sock
         user: cypht
-        working_dir: /opt/cypht-master/site
+        working_dir: /opt/cypht/site
 
     # pyslackers.postgres variables
     postgres_users:
@@ -72,7 +73,7 @@ Example Playbook
     # pyslackers.nginx variables
     nginx_sites:
       cypht:
-        directory: /opt/cypht-master/site
+        directory: /opt/cypht/site
         locations:
           root:
             location: /

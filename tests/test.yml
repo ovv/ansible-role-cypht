@@ -19,7 +19,7 @@
       cypht:
         socket: /var/run/php7.0-fpm-cypht.sock
         user: cypht
-        working_dir: /opt/cypht-master/site
+        working_dir: /opt/cypht/site
 
     # pyslackers.postgres variables
     postgres_users:
@@ -29,7 +29,7 @@
     # pyslackers.nginx variables
     nginx_sites:
       cypht:
-        directory: /opt/cypht-master/site
+        directory: /opt/cypht/site
         locations:
           root:
             location: /

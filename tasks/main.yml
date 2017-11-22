@@ -1,29 +1,23 @@
 ---
 
 - name: Download
-  get_url:
-    url: https://github.com/jasonmunro/cypht/archive/master.zip
-    dest: /usr/src/cypht.zip
+  git:
+    repo: "{{ cypht_git_url }}"
+    dest: /opt/cypht
+    version: "{{ cypht_version }}"
+    force: yes
   register: cypht_download
-
-- name: Unarchive
-  unarchive:
-    src: /usr/src/cypht.zip
-    remote_src: true
-    dest: /opt
-  notify: Restart PHP
-  when: cypht_download|changed
 
 - name: Configure
   template:
     owner: cypht
     group: cypht
-    src: opt/cypht-master/hm3.ini
-    dest: /opt/cypht-master/hm3.ini
+    src: opt/cypht/hm3.ini
+    dest: /opt/cypht/hm3.ini
   register: cypht_configuration
 
 - name: Generate configuration
-  command: /usr/bin/php /opt/cypht-master/scripts/config_gen.php
+  command: /usr/bin/php /opt/cypht/scripts/config_gen.php
   when: cypht_configuration | changed
 
 - name: Data folder
@@ -60,5 +54,5 @@
   changed_when: cypht_account.stdout == '0'
 
 - name: Create Account
-  command: "/usr/bin/php /opt/cypht-master/scripts/create_account.php {{ cypht_user }} {{ cypht_password }}"
+  command: "/usr/bin/php /opt/cypht/scripts/create_account.php {{ cypht_user }} {{ cypht_password }}"
   when: cypht_account | changed
