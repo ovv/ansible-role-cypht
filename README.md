@@ -1,7 +1,7 @@
 ovv.cypht
 =========
 
-[![Build Status](https://travis-ci.org/ovv/cypht.svg?branch=master)](https://travis-ci.org/ovv/cypht)
+[![Build Status](https://travis-ci.org/ovv/ansible-role-cypht.svg?branch=master)](https://travis-ci.org/ovv/ansible-role-cypht)
 
 Ansible role to install and configure [cypht](https://cypht.org/).
 
