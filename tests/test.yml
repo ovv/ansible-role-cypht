@@ -1,0 +1,44 @@
+---
+- hosts: localhost
+  roles:
+    - pyslackers.nginx
+    - pyslackers.postgres
+    - ovv.php7
+    - ansible-role-cypht
+  vars:
+    cypht_cookie_domain: cypht.example.com
+    cypht_user: admin
+    cypht_password: password
+    cypht_db_password: differentpassword
+
+    # ovv.php7 variables
+    custom_php_packages:
+      - php7.0-pgsql
+
+    php_pools:
+      cypht:
+        socket: /var/run/php7.0-fpm-cypht.sock
+        user: cypht
+        working_dir: /opt/cypht-master/site
+
+    # pyslackers.postgres variables
+    postgres_users:
+      cypht:
+        password: differentpassword
+
+    # pyslackers.nginx variables
+    nginx_sites:
+      cypht:
+        directory: /opt/cypht-master/site
+        locations:
+          root:
+            location: /
+            custom: |
+              try_files $uri $uri/ =404;
+          php:
+            location: ~ \.php$
+            custom: |
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:{{ php_pools['cypht']['socket'] }};
+              fastcgi_index index.php;
+              include fastcgi.conf;
