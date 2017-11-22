@@ -35,4 +35,4 @@ script:
     || (echo 'Idempotence test: fail' && exit 1)
   - curl localhost:80 -v
   - cat /etc/nginx/sites-enabled/cypht
-  - cat /opt/cypht-master/hm3.ini
+  - cat /opt/cypht/hm3.ini
