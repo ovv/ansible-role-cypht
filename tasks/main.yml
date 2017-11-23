@@ -6,7 +6,7 @@
     dest: /opt/cypht
     version: "{{ cypht_version }}"
     force: yes
-  register: cypht_download
+  notify: Restart PHP
 
 - name: Configure
   template:
