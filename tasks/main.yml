@@ -56,3 +56,31 @@
 - name: Create Account
   command: "/usr/bin/php /opt/cypht/scripts/create_account.php {{ cypht_user }} {{ cypht_password }}"
   when: cypht_account | changed
+
+- name: Fetch user settings
+  shell: |
+    psql -h localhost -U {{ cypht_db_user }} -tA -c "SELECT settings FROM hm_user_settings WHERE username='{{ cypht_user }}'"
+  environment:
+    PGPASSWORD: '{{ cypht_db_password }}'
+  when: cypht_backup
+  register: cypht_backup_settings
+
+- name: Save user settings
+  delegate_to: localhost
+  copy:
+    dest: "{{ cypht_settings_file }}"
+    content: "{{ cypht_backup_settings.stdout }}"
+  when: cypht_backup
+
+- name: Read user settings
+  delegate_to: localhost
+  set_fact:
+    cypht_user_settings: "{{ lookup('file', cypht_settings_file) }}"
+  when: cypht_restore
+
+- name: Restore user settings
+  shell: |
+    psql -h localhost -U {{ cypht_db_user }} -tA -c "UPDATE hm_user_settings SET settings='{{ cypht_user_settings }}' WHERE username='{{ cypht_user }}'"
+  environment:
+    PGPASSWORD: '{{ cypht_db_password }}'
+  when: cypht_restore

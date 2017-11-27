@@ -3,3 +3,6 @@ cypht_git_url: https://github.com/jasonmunro/cypht.git
 cypht_version: master
 
 cypht_db_user: cypht
+
+cypht_restore: False
+cypht_backup: False
