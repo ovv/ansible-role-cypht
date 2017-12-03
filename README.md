@@ -45,9 +45,9 @@ Example Playbook
   tags:
     - cypht
   roles:
+    - ovv.php7
     - pyslackers.nginx
     - pyslackers.postgres
-    - ovv.php7
     - ovv.cypht
   vars:
     cypht_cookie_domain: cypht.example.com
