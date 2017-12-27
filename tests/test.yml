@@ -27,6 +27,7 @@
         password: differentpassword
 
     # pyslackers.nginx variables
+    ufw_enabled: False  # UFW is not installed in test images
     nginx_sites:
       cypht:
         directory: /opt/cypht/site
