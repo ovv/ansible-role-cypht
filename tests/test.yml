@@ -32,12 +32,10 @@
       cypht:
         directory: /opt/cypht/site
         locations:
-          root:
-            location: /
+          - location: /
             custom: |
               try_files $uri $uri/ =404;
-          php:
-            location: ~ \.php$
+          - location: ~ \.php$
             custom: |
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
               fastcgi_pass unix:{{ php_pools['cypht']['socket'] }};
