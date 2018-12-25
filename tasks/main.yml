@@ -2,10 +2,8 @@
 
 - name: Requirements
   apt:
-    pkg: "{{ item }}"
+    pkg: git
     state: latest
-  with_items:
-    - git
 
 - name: Download
   git:
